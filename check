@@ -39,6 +39,16 @@ cd "${path}"
 [[ "${*}" =~ '--zip' ]] && zip_mode='true'
 
 
+# Sub program check
+#
+
+[[ ! -f "sp/edcre" ]] || [[ ! -f "sp/read" ]] || [[ ! -f "sp/write" ]] &&
+{
+     echo -e "\n   \e[41m missing at least one sub program \e[0m\n"
+     exit 2
+}
+
+
 # Data base information
 #
 
@@ -49,7 +59,7 @@ function get_db_info
      [[ ! -f "${redump}" ]] &&
      {
           echo -e "\n   \e[41m missing redump data base \e[0m\n"
-          exit 2
+          exit 3
      }
 
      declare -r redump_version="$(get_db_version "${redump}")"
@@ -61,7 +71,7 @@ function get_db_info
      [[ ! -f "${tosec_j}" ]] || [[ ! -f "${tosec_u}" ]] || [[ ! -f "${tosec_e}" ]] &&
      {
           echo -e "\n   \e[41m missing TOSEC data base \e[0m\n"
-          exit 3
+          exit 4
      }
 
      declare -r tosec_j_version="$(get_db_version "${tosec_j}")"
@@ -98,7 +108,7 @@ function get_header_info
      [[ ! -f "${header}" ]] &&
      {
           echo -e "\n   \e[41m missing header file \e[0m\n"
-          exit 4
+          exit 5
      }
 
      header_info="$(cat "${header}")"
@@ -237,7 +247,7 @@ function identify_tosec
      [[ ! "${tosec_name}" ]] &&
      {
           echo -e "\n   \e[41m unknown disc or corrupted dump \e[0m\n"
-          exit 5
+          exit 6
      }
 
      check_gdi && print_name
@@ -291,7 +301,7 @@ function check_gdi
      [[ ! "${gdi_info}" =~ "${gdi_md5}" ]] &&
      {
           echo -e "\n   \e[41m incorrect gdi sheet \e[0m\n"
-          exit 6
+          exit 7
      }
 
      return 0
@@ -352,7 +362,7 @@ function list_redump
      (( ${match_count} == 0 )) &&
      {
           echo -e "\n   \e[41m unknown disc or corrupted dump \e[0m\n"
-          exit 7
+          exit 8
      }
 
      for (( i=1 ; i<${match_count}+1 ; i++ )) ; do
@@ -419,7 +429,7 @@ function get_rom_info
      (( ${bin_count} != ${file_count} )) &&
      {
           echo -e "\n   \e[41m ${bin_count} tracks expected | ${file_count} provided \e[0m\n"
-          exit 8
+          exit 9
      }
 
      for (( i=0 ; i<${bin_count} ; i++ )) ; do
@@ -593,7 +603,7 @@ function repair_audio
                } ;;
 
           *)   echo -e "\n   \e[41m unknown audio track format for ${source_track} \e[0m\n"
-               exit 9 ;;
+               exit 10 ;;
 
      esac
 }
@@ -606,7 +616,7 @@ function repair_data
      (( ${diff_size[${task}]} != 225 )) &&
      {
           echo -e "\n   \e[41m unknown data track format for ${source_track} \e[0m\n"
-          exit 10
+          exit 11
      }
 
      # track start
